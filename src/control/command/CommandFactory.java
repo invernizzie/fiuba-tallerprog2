@@ -1,10 +1,7 @@
 package control.command;
 
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
 
 import model.filters.Filter;
 import model.filters.impl.Binarize;
@@ -37,11 +34,11 @@ public class CommandFactory {
     public static final String FILTER_SELECTOR = "FILTER_SELECTOR_COMMAND";
     public static final String FILTER_LIST = "FILTER_LIST_COMMAND";
     public static final String DETECT_EDGE = "DETECT_EDGE_COMMAND";
+    public static final String TRIM_EDGE = "TRIM_EDGE";
     public static final String DFT = "DFT_COMMAND";
     public static final String ADD_FILTER = "ADD_FILTER";
     public static final String REMOVE_FILTER = "REMOVE_FILTER";
     public static final String APPLY_FILTER_LIST = "APPLY_FILTER_LIST";
-    public static final String APPLY_SAVED_FILTER_LIST = "APPLY_SAVED_FILTER_LIST";
 
     public static Command getCommand(String commandName) throws CommandConstructionException {
 
@@ -87,6 +84,9 @@ public class CommandFactory {
 
         if (DETECT_EDGE.equals(commandName))
             return new CommandDetectEdges();
+
+        if (TRIM_EDGE.equals(commandName))
+            return new CommandTrimEdge();
         
         if (DFT.equals(commandName))
             return new CommandDFT();        
