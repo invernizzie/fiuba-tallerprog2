@@ -47,6 +47,7 @@ public class WidthCorrectingStrokeDetector implements StrokeDetector {
     private class StrokeWidthCorrectionConvolver extends Convolver {
 
         int threshold = 220;
+        private static final int STROKE_WIDTH = 5;
 
         @Override
         public Image filter(Image in) {
@@ -63,21 +64,23 @@ public class WidthCorrectingStrokeDetector implements StrokeDetector {
 
         @Override
         public void convolve() {
-            // Se recorre la imagen en cuadros de 5x5
-            for(int y = 0; y < height/5; y++)
-                for(int x = 0; x < width/5; x++) {
+            // Se recorre la imagen en cuadros
+            for (int y = 0; y + STROKE_WIDTH < height; y += STROKE_WIDTH)
+                for (int x = 0; x + STROKE_WIDTH < width; x += STROKE_WIDTH) {
 
                     // Si hay puntos por debajo y por encima del threshold, es contorno
+                    int k = 0;
+                    int j = 0;
                     boolean belowThreshold = false, aboveThreshold = false;
-                    for (int k = 0; k < 5 && !(belowThreshold && aboveThreshold) && (y*5+k < height); k++)
-                        for (int j = 0; j < 5 && !(belowThreshold && aboveThreshold) && (x*5+j < width); j++)
-                            if (grayValue(getImgPixel(x*5+j, y*5+k)) < threshold)
+                    for (; k < STROKE_WIDTH && !(belowThreshold && aboveThreshold) && (y + k < height); k++)
+                        for (j = 0; j < STROKE_WIDTH && !(belowThreshold && aboveThreshold) && (x + j < width); j++)
+                            if (grayValue(getImgPixel(x + j, y + k)) < threshold)
                                 belowThreshold = true;
                             else
                                 aboveThreshold = true;
 
                     if (belowThreshold && aboveThreshold)
-                        points.add(new IdentifiablePoint(x*5, y*5));
+                        points.add(new IdentifiablePoint(x + j, y + k));
                 }
         }
 

@@ -1,5 +1,6 @@
 package model.edgedetection;
 
+import model.fourier.Complex;
 import model.util.PointUtils;
 
 import java.awt.*;
@@ -13,7 +14,7 @@ import java.util.List;
  */
 public class Stroke {
 
-    Deque<Point> points = new ArrayDeque<Point>();
+    private Deque<Point> points = new ArrayDeque<Point>();
 
     public Point getFirstPoint() {
         return points.peekFirst();
@@ -39,6 +40,7 @@ public class Stroke {
      * Devuelve la distancia del punto al extremo mas cercano del trazo.
      *
      * @param point Punto cuya distancia al trazo se calcula
+     * @return Distancia del punto al trazo
      */
     public double distanceTo(Point point) {
         return Math.min(distanceToFirst(point), distanceToLast(point));
@@ -163,12 +165,47 @@ public class Stroke {
                 points.addLast(duplicate);
     }
 
+    /**
+     * Corta las puntas del trazo hasta el valor de x elegido.
+     *
+     * @param edgeX Valor de x a la derecha del cual se descartan
+     * las puntas (inicial y final) del trazo.
+     */
+    public void trimRightmostEndsHorizontally(int edgeX) {
+
+        Point newPoint = trimEndHorizontallyAndInterpolateExactPoint(edgeX, points.iterator());
+        if (newPoint != null)
+            points.addFirst(newPoint);
+
+        newPoint = trimEndHorizontallyAndInterpolateExactPoint(edgeX, points.descendingIterator());
+        if (newPoint != null)
+            points.addLast(newPoint);
+    }
+
+    private Point trimEndHorizontallyAndInterpolateExactPoint(int edgeX, Iterator<Point> pointIterator) {
+        if (!pointIterator.hasNext())
+            return null;
+
+        Point firstPoint = pointIterator.next();
+        Point secondPoint = firstPoint;
+        while (pointIterator.hasNext() && firstPoint.x > edgeX) {
+            firstPoint = secondPoint;
+            secondPoint = pointIterator.next();
+            
+            points.remove(firstPoint);
+            if (secondPoint.x < edgeX) {
+                return PointUtils.interpolateOnX(edgeX, firstPoint, secondPoint);
+            }
+        }
+        return null;
+    }
+
     private static final int FIRST_END = 0;
     private static final int LAST_END = 1;
 
     /**
-     * Devuelve 0 si el extremo mas a la derecha
-     * es el primero, y 1 si es el ultimo.
+     * @return 0 si el extremo mas a la derecha
+     * es el primero, y 1 si es el ultimo
      */
     private int rightmostEnd() {
         if (points.peekFirst().x > points.peekLast().x)
@@ -189,5 +226,57 @@ public class Stroke {
             }
         }
         return result;
+    }
+
+    public int determineMinYValue() {
+        Iterator<Point> pointIterator = points.iterator();
+        int minY = Integer.MAX_VALUE;
+        while (pointIterator.hasNext()) {
+            Point point = pointIterator.next();
+            if (point.y < minY)
+                minY = point.y;
+        }
+        return minY;
+    }
+
+    public int determineMaxYValue() {
+        Iterator<Point> pointIterator = points.iterator();
+        int maxY = Integer.MIN_VALUE;
+        while (pointIterator.hasNext()) {
+            Point point = pointIterator.next();
+            if (point.y > maxY)
+                maxY = point.y;
+        }
+        return maxY;
+    }
+
+    public Point getPointAtYOrInterpolate(int y) {
+        Iterator<Point> pointIterator;
+        if (getFirstPoint().y < getLastPoint().y)
+            pointIterator = points.iterator();
+        else
+            pointIterator = points.descendingIterator();
+
+        return getPointAtYOrInterpolate(y, pointIterator);
+    }
+
+    private Point getPointAtYOrInterpolate(int y, Iterator<Point> pointIterator) {
+        if (!pointIterator.hasNext())
+            return null;
+
+        Point firstPoint = pointIterator.next();
+        if (firstPoint.y > y)
+            return null;
+        else if (firstPoint.y == y)
+            return firstPoint;
+
+        Point secondPoint = firstPoint;
+        while (pointIterator.hasNext() && secondPoint.y < y) {
+            firstPoint = secondPoint;
+            secondPoint = pointIterator.next();
+        }
+        if (secondPoint.y >= y)
+            return PointUtils.interpolateOnY(y, firstPoint, secondPoint);
+        return null;
     }
 }
