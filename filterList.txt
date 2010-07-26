@@ -1,0 +1,3 @@
+true-Binarizacion
+false-Binarizacion
+true-Binarizacion-Filtro pasa bajos-Smooth
