@@ -1,4 +1,8 @@
-package main.model.fourier;
+package test.model.fourier;
+
+import main.model.fourier.Complex;
+import main.model.fourier.DFT;
+import main.model.fourier.IDFT;
 
 import java.awt.Point;
 import java.util.ArrayList;

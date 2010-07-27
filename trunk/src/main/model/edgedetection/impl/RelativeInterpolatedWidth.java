@@ -11,18 +11,23 @@ import java.awt.*;
  * @author Esteban I. Invernizzi (invernizzie@gmail.com)
  *         Date: 24/07/2010
  */
-public class InterpolatedVerticalStroke implements TransformableFunction {
+public class RelativeInterpolatedWidth implements TransformableFunction {
 
     private static final int DEFAULT_DOMAIN_SIZE = 300;
-
+    private static final int SCALE = 100;
+    
     private Stroke base;
     private int minY;
     private int maxY;
+    private int rightmostX;
+    private int width;
 
-    InterpolatedVerticalStroke(Stroke base) {
+    RelativeInterpolatedWidth(Stroke base) {
         this.base = base;
-        this.minY = base.determineMinYValue();
-        this.maxY = base.determineMaxYValue();
+        minY = base.determineMinYValue();
+        maxY = base.determineMaxYValue();
+        rightmostX = base.determineMaxXValue();
+        width = rightmostX - base.determineMinXValue();
     }
 
     public int getDomainSize() {
@@ -32,7 +37,7 @@ public class InterpolatedVerticalStroke implements TransformableFunction {
     public Complex getPoint(int index) throws OutOfBoundsException {
         testRange(index);
         Point point = base.getPointAtYOrInterpolate(translateYCoordinate(index));
-        return new Complex(point.x, point.y);
+        return new Complex((rightmostX - point.x) * SCALE / width, point.y);
     }
 
     private void testRange(int index) throws OutOfBoundsException {
