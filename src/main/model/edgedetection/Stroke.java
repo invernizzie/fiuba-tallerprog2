@@ -1,6 +1,7 @@
 package main.model.edgedetection;
 
 import main.model.util.PointUtils;
+import main.model.util.Search;
 
 import java.awt.*;
 import java.util.*;
@@ -228,25 +229,47 @@ public class Stroke {
     }
 
     public int determineMinYValue() {
-        Iterator<Point> pointIterator = points.iterator();
-        int minY = Integer.MAX_VALUE;
-        while (pointIterator.hasNext()) {
-            Point point = pointIterator.next();
-            if (point.y < minY)
-                minY = point.y;
-        }
-        return minY;
+        Point minYPoint = new Search<Point>(points.iterator()) {
+            @Override
+            protected boolean isPreferred(Point candidate) {
+                return (getChosen() == null)
+                        || ((candidate != null) && (candidate.y < getChosen().y));
+            }
+        }.execute();
+        return (minYPoint != null) ? minYPoint.y : Integer.MAX_VALUE;
     }
 
     public int determineMaxYValue() {
-        Iterator<Point> pointIterator = points.iterator();
-        int maxY = Integer.MIN_VALUE;
-        while (pointIterator.hasNext()) {
-            Point point = pointIterator.next();
-            if (point.y > maxY)
-                maxY = point.y;
-        }
-        return maxY;
+        Point maxYPoint = new Search<Point>(points.iterator()) {
+            @Override
+            protected boolean isPreferred(Point candidate) {
+                return (getChosen() == null)
+                        || ((candidate != null) && (candidate.y > getChosen().y));
+            }
+        }.execute();
+        return (maxYPoint != null) ? maxYPoint.y : Integer.MAX_VALUE;
+    }
+
+    public int determineMinXValue() {
+        Point minXPoint = new Search<Point>(points.iterator()) {
+            @Override
+            protected boolean isPreferred(Point candidate) {
+                return (getChosen() == null)
+                        || ((candidate != null) && (candidate.x < getChosen().x));
+            }
+        }.execute();
+        return (minXPoint != null) ? minXPoint.x : Integer.MAX_VALUE;
+    }
+
+    public int determineMaxXValue() {
+        Point maxXPoint = new Search<Point>(points.iterator()) {
+            @Override
+            protected boolean isPreferred(Point candidate) {
+                return (getChosen() == null)
+                        || ((candidate != null) && (candidate.x > getChosen().x));
+            }
+        }.execute();
+        return (maxXPoint != null) ? maxXPoint.x : Integer.MIN_VALUE;
     }
 
     public Point getPointAtYOrInterpolate(int y) {
