@@ -17,8 +17,10 @@ public class CommandTrimEdge extends MyFrameCommand {
         getFrame().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent event) {
-                if (getFrame().getProfile() != null)
-                    getFrame().getProfile().trimRightmostEndsHorizontally(event.getX() - getFrame().getLeftOffset());
+                if (getFrame().getProfile() != null) {
+                    getFrame().getProfile().trimRightmostEndsHorizontally(
+                            (int)((event.getX() - getFrame().getLeftOffset()) / getFrame().getXScale()) );
+                }
                 getFrame().removeMouseListener(this);
                 getFrame().repaint();
             }

@@ -210,7 +210,9 @@ public class MyFrame extends Frame{
 	}
 	
 	public void setImageOrig(Image image){
-		this.imageOrig=image;
+		imageOrig = image;
+        ancho = imageOrig.getWidth(this);
+        alto = imageOrig.getHeight(this);
 	}
 	
 	public Image getImageOrig(){
@@ -218,7 +220,7 @@ public class MyFrame extends Frame{
 	}
 	
 	public void setImage(Image image){
-		this.image=image;
+		this.image = image;
 	}
 	
 	public Image getImage(){
@@ -249,25 +251,23 @@ public class MyFrame extends Frame{
         this.profile = profile;
     }
 
-    public void paint(Graphics graphics){
-		
-		if(image!=null){
-			/*BufferedImage bi = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);
-			Graphics2D g2d = bi.createGraphics();
-			if(ancho==0 || alto==0)
-				g2d.drawImage(image, 0, 0, null);
-			else
-				g2d.drawImage(image, 0, 0, ancho, alto, null);
-			g2d.dispose();*/
-			//Lo comentado es para hacer doble buffering, pero como no funciona bien
-			//o lo estoy aplicando incorrectamente, lo dejo sin este feature
-			//Para aplicar doble buffering tambien hay que cambiar en el if de abajo "image por bi"
+    public double getXScale() {
+        return (double)ancho / image.getWidth(this);
+    }
 
+    public double getYScale() {
+        return (double)alto / image.getHeight(this);
+    }
+
+    public void paint(Graphics graphics){
+
+		if (image != null) {
             graphics.translate(anchoIzquierdo, alturaMenu);
-			if((ancho == 0) || (alto == 0))
-				graphics.drawImage(image, 0, 0, null);
-			else
-				graphics.drawImage(image, 0, 0, ancho, alto, null);
+
+            graphics = new ScaledGraphics(graphics,
+                    getXScale(), getYScale());
+
+            graphics.drawImage(image, 0, 0, image.getWidth(this), image.getHeight(this), null);
 
             if (strokes != null)
                 for(Stroke stroke: strokes)
