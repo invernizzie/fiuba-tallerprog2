@@ -1,18 +1,64 @@
 package main.model.fourier;
 
 
+import main.model.fourier.exceptions.OutOfBoundsException;
+import main.model.fourier.impl.SimpleDiscreteComplexFunction;
+
 import java.util.List;
 
 public class IDFT {
 
+    private DiscreteComplexFunction transformedFunction;
+
 	private int numberOfPoints;
 	private List<Complex> data;
-	
+
+    public IDFT(DiscreteComplexFunction function) {
+        transformedFunction = function;
+    }
+
+    public DiscreteComplexFunction invert() {
+        SimpleDiscreteComplexFunction result = new SimpleDiscreteComplexFunction();
+        for (int i = 0; i < transformedFunction.getDomainSize(); i++) {
+            try {
+                result.addValue(invertPoint(i));
+            } catch (OutOfBoundsException e) {
+                System.err.println("Se capturo una excepcion que nunca deberia arrojarse, error irrecuperable");
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    private Complex invertPoint(int pointNumber) throws OutOfBoundsException {
+        Complex result = new Complex(0.0f,0.0f);
+
+        if ((pointNumber < 0) || (pointNumber >= transformedFunction.getDomainSize()))
+            throw new OutOfBoundsException(pointNumber);
+
+        if (pointNumber == 0) {
+            for (int n = 0; n < transformedFunction.getDomainSize(); n++) {
+                result = result.add(transformedFunction.getValue(n));
+            }
+        }
+        else {
+            for (int n = 0; n < transformedFunction.getDomainSize(); n++) {
+                double scale = (2 * Math.PI * n * pointNumber) / transformedFunction.getDomainSize();
+                Complex newCx = new Complex((float) Math.cos(scale), (float) Math.sin(scale));
+                result = result.add(transformedFunction.getValue(n).mult(newCx));
+            }
+        }
+		result = result.div(transformedFunction.getDomainSize());
+		return result;
+    }
+
+    @Deprecated
 	public IDFT(List<Complex> data, int numberOfPoints){
 		this.data = data;
 		this.numberOfPoints = numberOfPoints;
 	}
 
+    @Deprecated
 	public Complex getIDFTPoint(int pointNumber){
 		Complex ret = new Complex(0.0f,0.0f);
 		if (pointNumber >= 0 && pointNumber < numberOfPoints) {
