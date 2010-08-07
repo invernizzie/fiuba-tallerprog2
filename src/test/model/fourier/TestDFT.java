@@ -1,8 +1,9 @@
 package test.model.fourier;
 
-import main.model.fourier.Complex;
-import main.model.fourier.DFT;
-import main.model.fourier.IDFT;
+import main.model.edgedetection.Stroke;
+import main.model.fourier.*;
+import main.model.fourier.exceptions.OutOfBoundsException;
+import main.model.fourier.impl.SimpleDiscreteComplexFunction;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -15,36 +16,74 @@ public class TestDFT{
 	 */
 	public static void main(String[] args) {
 		int N = 11;
+
+		List<Point> originalData = new ArrayList<Point>();
+		originalData.add(new Point(12, 34)); //34
+		originalData.add(new Point(43, 23)); //23
+		originalData.add(new Point(76, 66)); //66
+		originalData.add(new Point(12, 1)); //1
+		originalData.add(new Point(4, 78)); //78
+		originalData.add(new Point(44, 75)); //75
+		originalData.add(new Point(84, 44)); //44
+		originalData.add(new Point(12, 23)); //23
+		originalData.add(new Point(88, 49)); //49
+		originalData.add(new Point(18, 29)); //29
+		originalData.add(new Point(18, 198)); //198
+
+        SimpleDiscreteComplexFunction originalFunction = new SimpleDiscreteComplexFunction();
+        for (Point point: originalData) {
+            originalFunction.addValue(new Complex(point.x, point.y));
+        }
 		
-		List<Point> dataInteger = new ArrayList<Point>();
-		dataInteger.add(new Point(12, 34)); //34
-		dataInteger.add(new Point(43, 23)); //23
-		dataInteger.add(new Point(76, 66)); //66
-		dataInteger.add(new Point(12, 1)); //1
-		dataInteger.add(new Point(4, 78)); //78
-		dataInteger.add(new Point(44, 75)); //75
-		dataInteger.add(new Point(84, 44)); //44
-		dataInteger.add(new Point(12, 23)); //23
-		dataInteger.add(new Point(88, 49)); //49
-		dataInteger.add(new Point(18, 29)); //29
-		dataInteger.add(new Point(18, 198)); //198
-		
-		
-		List<Complex> dataComplex = new ArrayList<Complex>();
-		
-		DFT dft = new DFT(dataInteger, N);
+		List<Complex> transformedData = new ArrayList<Complex>();
+
+        /*** Legacy transform ***/
+		DFT dft = new DFT(originalData, N);
 		for(int i = 0; i < N; i++){
 			Complex p = dft.getDFTPoint(i);
-			dataComplex.add(p);
+			transformedData.add(p);
 		}
+        /************************/
 
-		IDFT idft = new IDFT(dataComplex, N);
+        /***** New transform ****/
+        // TODO
+        DiscreteComplexFunction transformedFunction = new DFT(originalFunction).transform();
+        for (int i = 0; i < transformedFunction.getDomainSize(); i++) {
+            Complex p = transformedData.get(i);
+            try {
+                if (!p.equals(transformedFunction.getValue(i)))
+                    throw new RuntimeException("Las transformadas no coinciden");
+            } catch (OutOfBoundsException e) {
+                throw new RuntimeException("Las transformadas no coinciden");
+            }
+        }
+        /************************/
+
+        List<Complex> invertedData = new ArrayList<Complex>();
+
+        /**** Legacy inverse ****/
+		IDFT idft = new IDFT(transformedData, N);
 		for(int i = 0; i < N; i++){
 			Complex p = idft.getIDFTPoint(i);
 			System.out.println(Math.round(p.getReal())); //la parte imaginaria en la inversion, es siempre 0
-            assertEquals(dataInteger.get(i).y, Math.round(p.getReal()));
+            assertEquals(originalData.get(i).y, Math.round(p.getReal()));
             assertEquals(0, Math.round(p.getImaginary()));
+            invertedData.add(p);
 		}
+        /************************/
+
+        /***** New inverse ******/
+        DiscreteComplexFunction invertedFunction = new IDFT(transformedFunction).invert();
+        for (int i = 0; i < invertedFunction.getDomainSize(); i++) {
+            Complex p = invertedData.get(i);
+            try {
+                if (!p.equals(invertedFunction.getValue(i)))
+                    throw new RuntimeException("Las inversiones no coinciden");
+            } catch (OutOfBoundsException e) {
+                throw new RuntimeException("Las inversiones no coinciden");
+            }
+        }
+        /************************/
 	}
 
     public static void  assertEquals(Object expected, Object actual) {

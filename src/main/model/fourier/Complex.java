@@ -59,4 +59,23 @@ public class Complex {
 	    return new Complex(R, I);
 	  }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Complex)) return false;
+
+        Complex complex = (Complex) o;
+
+        if (Float.compare(complex.imaginary, imaginary) != 0) return false;
+        if (Float.compare(complex.real, real) != 0) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (real != +0.0f ? Float.floatToIntBits(real) : 0);
+        result = 31 * result + (imaginary != +0.0f ? Float.floatToIntBits(imaginary) : 0);
+        return result;
+    }
 }
