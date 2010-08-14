@@ -1,9 +1,6 @@
 package main.model.fourier.impl;
 
-import main.model.fourier.AbstractDiscreteComplexFunction;
-import main.model.fourier.Complex;
-import main.model.fourier.DiscreteComplexFunction;
-import main.model.fourier.exceptions.OutOfBoundsException;
+import main.model.fourier.AbstractDiscreteFunction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +9,9 @@ import java.util.List;
  * @author Esteban I. Invernizzi (invernizzie@gmail.com)
  *         Date: 31/07/2010
  */
-public class SimpleDiscreteComplexFunction extends AbstractDiscreteComplexFunction {
+public class SimpleDiscreteFunction <T> extends AbstractDiscreteFunction<T> {
 
-    private List<Complex> points = new ArrayList<Complex>();
+    private List<T> points = new ArrayList<T>();
 
     public int getDomainSize() {
         return points.size();
@@ -24,12 +21,12 @@ public class SimpleDiscreteComplexFunction extends AbstractDiscreteComplexFuncti
      * Agrega el valor en el siguiente indice
      * @param value Punto a agregar
      */
-    public void addValue(Complex value) {
+    public void addValue(T value) {
         points.add(value);
     }
 
     @Override
-    protected Complex doGetValue(int ordinate) {
+    protected T doGetValue(int ordinate) {
         return points.get(ordinate);
     }
 

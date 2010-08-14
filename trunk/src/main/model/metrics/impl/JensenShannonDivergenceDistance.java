@@ -1,21 +1,22 @@
 package main.model.metrics.impl;
 
-import main.model.metrics.Distance;
+import main.model.fourier.DiscreteFunction;
+import main.model.fourier.exceptions.OutOfBoundsException;
+import main.model.metrics.ComplexDistance;
 
 /**
  * @author Esteban I. Invernizzi
  *         Date 24/06/2010
  */
-public class JensenShannonDivergenceDistance extends Distance {
+public class JensenShannonDivergenceDistance extends ComplexDistance {
 
     @Override
-    protected double doCompute(double[] sign1, double[] sign2) {
+    protected double doCompute(DiscreteFunction<Double> fn1, DiscreteFunction<Double> fn2) throws OutOfBoundsException {
         double result = 0;
 
-        for (int i = 0; i < sign1.length; i++) {
-            double term1 = sign1[i] * Math.log10(2 * sign1[i] / (sign1[i] + sign2[i]));
-            double term2 = sign2[i] * Math.log10(2 * sign2[i] / (sign1[i] + sign2[i]));
-            result += term1 + term2;
+        for (int i = 0; i < fn1.getDomainSize(); i++) {
+            result +=  fn1.getValue(i) * Math.log10(2 * fn1.getValue(i) / (fn1.getValue(i) + fn2.getValue(i)));
+            result +=  fn2.getValue(i) * Math.log10(2 * fn2.getValue(i) / (fn1.getValue(i) + fn2.getValue(i)));
         }
         return result;
     }

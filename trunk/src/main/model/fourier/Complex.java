@@ -2,41 +2,41 @@ package main.model.fourier;
 
 public class Complex {
   
-	private float real;
-	private float imaginary;
+	private double real;
+	private double imaginary;
 
 	public Complex(){
 		this.real = 0f;
 		this.imaginary = 0f;
 	}
 
-	public Complex(float real, float imaginary){
+	public Complex(double real, double imaginary){
 		this.real = real;
 		this.imaginary = imaginary;
 	}
 
-	public float getReal() {
+	public double getReal() {
 		return real;
 	}
 
-	public void setReal(float real) {
+	public void setReal(double real) {
 		this.real = real;
 	}
 
-	public float getImaginary() {
+	public double getImaginary() {
 		return imaginary;
 	}
 
-	public void setImaginary(float imaginary) {
+	public void setImaginary(double imaginary) {
 		this.imaginary = imaginary;
 	}
 	
-	public float getMagnitude(){
-	    return ( (float)Math.sqrt((real*real)+(imaginary*imaginary)) );
+	public double getMagnitude(){
+	    return Math.sqrt((real * real) + (imaginary * imaginary));
 	}
 
-	public float getAngle(){
-	    float angle = (float)Math.atan( imaginary / real );
+	public double getAngle(){
+	    double angle = Math.atan(imaginary / real);
 	    return ( (angle * 180.0f)/(float)Math.PI );
 	}
 	  
@@ -45,19 +45,19 @@ public class Complex {
 	}
 
     public Complex mult(Complex cx){
-	    float r = (real * cx.getReal()) - (imaginary * cx.getImaginary());
-	    float i = (real * cx.getImaginary()) + (cx.getReal() * imaginary);
+	    double r = (real * cx.getReal()) - (imaginary * cx.getImaginary());
+	    double i = (real * cx.getImaginary()) + (cx.getReal() * imaginary);
 	    return new Complex(r, i);
 	}
 
 	public Complex div(float divisor){
-	    float R2 = divisor;
-	    float div;
+	    double R2 = divisor;
+	    double div;
 	    div = R2 * R2;
-	    float R = (real * R2) / div;
-	    float I = (R2 * imaginary) / div;
+	    double R = (real * R2) / div;
+	    double I = (R2 * imaginary) / div;
 	    return new Complex(R, I);
-	  }
+	}
 
     @Override
     public boolean equals(Object o) {
@@ -66,16 +66,20 @@ public class Complex {
 
         Complex complex = (Complex) o;
 
-        if (Float.compare(complex.imaginary, imaginary) != 0) return false;
-        if (Float.compare(complex.real, real) != 0) return false;
+        if (Double.compare(complex.imaginary, imaginary) != 0) return false;
+        if (Double.compare(complex.real, real) != 0) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = (real != +0.0f ? Float.floatToIntBits(real) : 0);
-        result = 31 * result + (imaginary != +0.0f ? Float.floatToIntBits(imaginary) : 0);
+        int result;
+        long temp;
+        temp = real != +0.0d ? Double.doubleToLongBits(real) : 0L;
+        result = (int) (temp ^ (temp >>> 32));
+        temp = imaginary != +0.0d ? Double.doubleToLongBits(imaginary) : 0L;
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
 }

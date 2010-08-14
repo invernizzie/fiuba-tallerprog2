@@ -1,7 +1,7 @@
 package main.model.fourier;
 
 import main.model.fourier.exceptions.OutOfBoundsException;
-import main.model.fourier.impl.SimpleDiscreteComplexFunction;
+import main.model.fourier.impl.SimpleDiscreteFunction;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -10,17 +10,17 @@ import java.util.List;
 
 public class DFT {
 
-    private DiscreteComplexFunction originalFunction;
+    private DiscreteFunction<Complex> originalFunction;
 
 	private int numberOfPoints;      
 	private List<Point> data;  
 
-    public DFT(DiscreteComplexFunction function) {
+    public DFT(DiscreteFunction<Complex> function) {
         originalFunction = function;
     }
 
-    public DiscreteComplexFunction transform() {
-        SimpleDiscreteComplexFunction result = new SimpleDiscreteComplexFunction();
+    public DiscreteFunction<Complex> transform() {
+        SimpleDiscreteFunction<Complex> result = new SimpleDiscreteFunction<Complex>();
         for (int i = 0; i < originalFunction.getDomainSize(); i++) {
             try {
                 result.addValue(transformPoint(i));
