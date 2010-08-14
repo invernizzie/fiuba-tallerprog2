@@ -2,23 +2,23 @@ package main.model.fourier;
 
 
 import main.model.fourier.exceptions.OutOfBoundsException;
-import main.model.fourier.impl.SimpleDiscreteComplexFunction;
+import main.model.fourier.impl.SimpleDiscreteFunction;
 
 import java.util.List;
 
 public class IDFT {
 
-    private DiscreteComplexFunction transformedFunction;
+    private DiscreteFunction<Complex> transformedFunction;
 
 	private int numberOfPoints;
 	private List<Complex> data;
 
-    public IDFT(DiscreteComplexFunction function) {
+    public IDFT(DiscreteFunction<Complex> function) {
         transformedFunction = function;
     }
 
-    public DiscreteComplexFunction invert() {
-        SimpleDiscreteComplexFunction result = new SimpleDiscreteComplexFunction();
+    public DiscreteFunction<Complex> invert() {
+        SimpleDiscreteFunction<Complex> result = new SimpleDiscreteFunction<Complex>();
         for (int i = 0; i < transformedFunction.getDomainSize(); i++) {
             try {
                 result.addValue(invertPoint(i));

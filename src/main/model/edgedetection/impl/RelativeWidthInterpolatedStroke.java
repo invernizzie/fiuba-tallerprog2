@@ -1,10 +1,8 @@
 package main.model.edgedetection.impl;
 
 import main.model.edgedetection.Stroke;
-import main.model.fourier.AbstractDiscreteComplexFunction;
+import main.model.fourier.AbstractDiscreteFunction;
 import main.model.fourier.Complex;
-import main.model.fourier.DiscreteComplexFunction;
-import main.model.fourier.exceptions.OutOfBoundsException;
 
 import java.awt.*;
 
@@ -12,7 +10,7 @@ import java.awt.*;
  * @author Esteban I. Invernizzi (invernizzie@gmail.com)
  *         Date: 24/07/2010
  */
-public class RelativeWidthInterpolatedStroke extends AbstractDiscreteComplexFunction {
+public class RelativeWidthInterpolatedStroke extends AbstractDiscreteFunction<Complex> {
 
     private static final int DEFAULT_DOMAIN_SIZE = 300;
     private static final int SCALE = 100;

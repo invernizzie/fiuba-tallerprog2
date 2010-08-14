@@ -1,9 +1,8 @@
 package test.model.fourier;
 
-import main.model.edgedetection.Stroke;
 import main.model.fourier.*;
 import main.model.fourier.exceptions.OutOfBoundsException;
-import main.model.fourier.impl.SimpleDiscreteComplexFunction;
+import main.model.fourier.impl.SimpleDiscreteFunction;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -30,7 +29,7 @@ public class TestDFT{
 		originalData.add(new Point(18, 29)); //29
 		originalData.add(new Point(18, 198)); //198
 
-        SimpleDiscreteComplexFunction originalFunction = new SimpleDiscreteComplexFunction();
+        SimpleDiscreteFunction<Complex> originalFunction = new SimpleDiscreteFunction<Complex>();
         for (Point point: originalData) {
             originalFunction.addValue(new Complex(point.x, point.y));
         }
@@ -47,7 +46,7 @@ public class TestDFT{
 
         /***** New transform ****/
         // TODO
-        DiscreteComplexFunction transformedFunction = new DFT(originalFunction).transform();
+        DiscreteFunction<Complex> transformedFunction = new DFT(originalFunction).transform();
         for (int i = 0; i < transformedFunction.getDomainSize(); i++) {
             Complex p = transformedData.get(i);
             try {
@@ -65,15 +64,15 @@ public class TestDFT{
 		IDFT idft = new IDFT(transformedData, N);
 		for(int i = 0; i < N; i++){
 			Complex p = idft.getIDFTPoint(i);
-			System.out.println(Math.round(p.getReal())); //la parte imaginaria en la inversion, es siempre 0
-            assertEquals(originalData.get(i).y, Math.round(p.getReal()));
-            assertEquals(0, Math.round(p.getImaginary()));
+			System.out.println(Math.round(p.getReal()));
+            assertEquals(new Integer(originalData.get(i).y).longValue(), Math.round(p.getReal()));
+            assertEquals(0L, Math.round(p.getImaginary())); // La parte imaginaria en la inversion debe ser siempre 0
             invertedData.add(p);
 		}
         /************************/
 
         /***** New inverse ******/
-        DiscreteComplexFunction invertedFunction = new IDFT(transformedFunction).invert();
+        DiscreteFunction<Complex> invertedFunction = new IDFT(transformedFunction).invert();
         for (int i = 0; i < invertedFunction.getDomainSize(); i++) {
             Complex p = invertedData.get(i);
             try {
